@@ -1,13 +1,12 @@
 package com.bitcodetech.web1
 
-import android.net.Uri
 import android.util.Log
+import com.google.gson.Gson
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.security.auth.login.LoginException
 
-class WebUtil {
+class WebUtil{
 
     companion object {
 
@@ -41,7 +40,7 @@ class WebUtil {
 
         }
 
-        fun getDogBreeds() : ArrayList<User>?{
+        fun getUsers() : ArrayList<User>?{
 
             val httpUrlCon = URL("https://reqres.in/api/users?page=2").openConnection() as HttpURLConnection
             httpUrlCon.connect()
@@ -91,6 +90,38 @@ class WebUtil {
 
         }
 
+        fun getUsersNew() {
+            val httpUrlCon =
+                URL("https://reqres.in/api/users?page=2").openConnection() as HttpURLConnection
+            httpUrlCon.connect()
+
+            if (httpUrlCon.responseCode == 200) {
+                val buffer = StringBuffer()
+                val data = ByteArray(1024)
+                var count: Int = 0
+                while (count != -1) {
+                    count = httpUrlCon.inputStream.read(data)
+                    if (count != -1) {
+                        buffer.append(String(data, 0, count))
+                    }
+                }
+                httpUrlCon.inputStream.close()
+                httpUrlCon.disconnect()
+
+                val gson = Gson()
+                val response : Response =
+                    gson.fromJson<Response>(buffer.toString(), Response::class.java)
+
+                Log.e("tag", response.toString())
+                for(user in response.users!!) {
+                    Log.e("tag", user.toString())
+                }
+
+            }
+        }
+
+
     }
+
 
 }
